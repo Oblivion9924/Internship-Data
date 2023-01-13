@@ -1,0 +1,62 @@
+from model.PreProcessing import getInputModule as getInput
+
+
+# function vehiclereadin having dict for simulation
+# define parameters which have to be read in
+def vehiclereadin(activefile, activesheetname):
+    framehandle = getInput.ExcelReadIn(activefile, activesheetname)
+    dict_readin = {'vehicleName': [']title(text)', 'single'], 'length': [']length(m)', 'single'],
+                   'traction': ['traction_V(km/h)_F(N)_link(1,2)', 'table'],
+                   'vehicleStaticMass': [']static_mass(kg)', 'single'],
+                   'vehicleRotatingMass': [']rotating_mass(kg)', 'single'],
+                   'resistance': [']resistance_name(word)_A(N)_B(N/(km/h))_C(N/(km/h)2)_windT(km/h)_windB(km/h)',
+                                  'table'],
+                   'maxSpeed': [']max_speed(km/h)', 'single'],
+                   'max_deceleration': [']max_deceleration(m/s2)', 'single'],
+                   'max_acceleration': [']max_acceleration(m/s2)', 'single'],
+                   'max_jerk_traction': [']max_jerk_traction(m/s3)', 'single'],
+                   'max_jerk_braking': [']max_jerk_braking(m/s3)', 'single'],
+                   'tractionForceTable': [']traction_V(km/h)_F(N)_link(1,2)', 'table'],
+                   'brakingForceTable': [']braking_V(km/h)_F(N)_link(1,2)', 'table']}
+
+    outputdict = {key: framehandle.value_readin(value) for (key, value) in dict_readin.items()}
+    outputdict["resistance_A"] = outputdict["resistance"][1]
+    outputdict["resistance_B"] = outputdict["resistance"][2] * 3.6
+    outputdict["resistance_C"] = outputdict["resistance"][3] * 3.6**2
+    outputdict["velocity"] = outputdict["tractionForceTable"].loc[:, 0].div(3.6)
+    # print("res", outputdict["resistance_A"])
+    # print(outputdict["resistance_B"])
+    # print(outputdict['maxSpeed'])
+    print("tra", type(outputdict['tractionForceTable']))
+    # print(outputdict)
+    return outputdict
+
+
+# function linereadin having dict for simulation
+# define parameters which have to be read in
+
+
+def linereadin(activefile, activesheetname):
+    framehandle = getInput.ExcelReadIn(activefile, activesheetname)
+    dict_readin = {'lineName': [']title(text)', 'single'],
+                   'auxiliaryLoadsBestCase': [']auxiliaryLoadsBestCase [kW]', 'single'],
+                   'vehicle.auxiliaryLoadsBestCase': 'auxiliaryLoadsBestCase' * 1000,
+                   'auxiliaryLoadsWorstCase': [']auxiliaryLoadsWorstCase [kW]', 'single'],
+                   'vehicle.auxiliaryLoadsWorstCase': ['auxiliaryLoadsWorstCase' * 1000],
+                   'line.gravity': [']gravity_acceleration(m/s2)', 'single'],
+                   'gradTable': [']gradients_kp(m)_g(o/oo)_link(0,1)', 'table']}
+    outputdict = {key: framehandle.value_readin(value) for (key, value) in dict_readin.items()}
+    return outputdict
+
+# function drivingreadin having dict for simulation
+# define parameters which have to be read in
+
+
+def drivingreadin(activefile, activesheetname):
+    framehandle = getInput.ExcelReadIn(activefile, activesheetname)
+    dict_readin = {'stations': [']stations_middle_kp(m)_(S/P)_t(s)_name(text)', 'table'],
+                   'station_names': [']stations_middle_kp(m)_(S/P)_t(s)_name(text)', 'table'],
+                   'maxSpeedsHeadAndTail': [']max_speeds_head_and_tail_kp(m)_v(km/h)', 'table'],
+                   'maxSpeedsHead': [']max_speeds_head_kp(m)_v(km/h)', 'table']}
+    outputdict = {key: framehandle.value_readin(value) for (key, value) in dict_readin.items()}
+    return outputdict
