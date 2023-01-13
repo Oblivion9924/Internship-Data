@@ -1,0 +1,58 @@
+# Excel Read in class is used to unify the sheet handle and data processing
+# Input: -
+# Output: single value || table
+
+# dictionary with switch parameters
+
+import numpy as np
+import pandas as pd
+
+
+class ExcelReadIn:
+    def __init__(self, selectedfiles, sheetname):
+        self.df = pd.read_excel(selectedfiles, sheetname, header=None)
+
+    def single_value(self, valuename):
+        mask = np.column_stack([self.df[col].astype(str).str.contains(valuename[0],
+                                                                      na=False, regex=False) for col in self.df])
+        cellrow, cellcol = list(np.where(mask))
+        if len(cellrow) == 0:
+            value = []
+        elif self.df.iloc[cellrow[0], cellcol[0] + 1] == np.nan:
+            value = []
+        else:
+            value = self.df.iloc[cellrow[0], cellcol[0] + 1]
+        return value
+
+    def table_value(self, valuename):
+        mask = np.column_stack(
+            [self.df[col].astype(str).str.contains(valuename[0], na=False, regex=False) for col in self.df])
+        cellrow, cellcol = list(np.where(mask))
+        if len(cellrow) == 0:
+            value = []
+        elif self.df.iloc[cellrow[0], cellcol[0] + 1] == np.nan:
+            value = []
+        else:
+            value = self.df.iloc[cellrow[0], cellcol[0] + 1]
+
+        # check if variable is found and search for first ]end //
+        if self.df.iloc[cellrow[0], cellcol[0]] is not []:
+            maskEnd = np.column_stack(
+                [self.df[col].astype(str).str.contains(']end', na=False, regex=False) for col in self.df])
+            cellrowEnd, cellcolEnd = list(np.where(maskEnd))
+            sliceingDataframe = self.df[cellrow[0] + 1: cellrowEnd[np.argmax(cellrowEnd > cellrow[0])]]
+            return sliceingDataframe
+
+    # general read in function which decides if table, single value (def == single value)
+    def value_readin(self, valuename):
+        # search for single or table value, by default assumed single value
+        if len(valuename) == 1:
+            print('Default single value assumed')
+            dummy = self.single_value(valuename)
+            # catch default single value
+        elif valuename[1] == 'single':
+            dummy = self.single_value(valuename)
+        else:
+            dummy = self.table_value(valuename)
+        return dummy
+       
