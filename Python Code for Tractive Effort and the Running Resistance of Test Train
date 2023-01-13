@@ -1,0 +1,69 @@
+import matplotlib.pyplot as plt
+from matplotlib.ticker import (AutoMinorLocator, MultipleLocator)
+
+# Maximum force
+p = 1000000
+# solution Fmax as a variable
+solutionfmax = []
+solutionv = []
+for v in range(1, 251):
+    print(v)
+    fmax = (p/(v/3.6))
+
+    min(fmax, 110000)
+    print(fmax)
+    solutionfmax.append(min(fmax, 110000))
+    solutionv.append(v)
+# nested for loop
+solutiongr = []
+solutiongr5 = []
+solutiongr10 = []
+
+a = 15.77
+b = 4.89
+c = 0.2
+m = 106
+g = 9.81
+x = 0
+y = 5
+z = 10
+for v in range(1, 251):
+    gr = ((m * a) + (b * v) + (c * v * v) + (m * 1000 * g * x/1000))
+    print(gr)
+    solutiongr.append(gr)
+
+    gr5 = ((m * a) + (b * v) + (c * v * v) + (m * 1000 * g * y/1000))
+    print(gr5)
+    solutiongr5.append(gr5)
+
+    gr10 = ((m * a) + (b * v) + (c * v * v) + (m * 1000 * g * z/1000))
+    print(gr10)
+    solutiongr10.append(gr10)
+
+# plotting lines
+fig, ax = plt.subplots(figsize=(8, 8))
+plt.plot(solutionv,solutionfmax)
+plt.plot(solutionv,solutiongr)
+plt.plot(solutionv,solutiongr5)
+plt.plot(solutionv,solutiongr10)
+plt.ylabel('Tractive Effort[N]')
+plt.xlabel('Velocity[km/h]')
+plt.title('Tractive Effort Curve')
+plt.legend(["Max Tractive Force", "DavisResistance@0%", "5%", "10%"], loc="best")
+# Change major ticks to show every 20.
+ax.xaxis.set_major_locator(MultipleLocator(50))
+ax.yaxis.set_major_locator(MultipleLocator(10000))
+
+# Change minor ticks to show every 5
+ax.xaxis.set_minor_locator(AutoMinorLocator(5))
+ax.yaxis.set_minor_locator(AutoMinorLocator(5))
+
+# Turn grid on for major and minor
+# differently.
+ax.grid(which='major', linestyle=':')
+ax.grid(which='minor', linestyle=':')
+
+plt.grid()
+
+plt.show()
+
