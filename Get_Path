@@ -1,0 +1,25 @@
+import os
+from datetime import datetime as dt
+
+from model.PreProcessing.getvalue import vehiclereadin
+from model.PreProcessing.getvalue import linereadin
+
+
+def get_path():
+    cwd = os.getcwd()
+    print(cwd)
+    return cwd
+
+
+def output_directory(vehiclename, linename):
+    # base directory
+    base_directory = get_path()
+
+    # create dynamic name, like "Title Track_Title Train_2022-09-20_13-44"
+    directory = os.path.join(base_directory, "02_simOutput", vehiclename + "_" + linename + "_" + dt.now().strftime
+                             ('%Y-%m-%d_%H-%M-%S'))
+    # create 'dynamic' directory, if it does not exist
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    return directory
+
